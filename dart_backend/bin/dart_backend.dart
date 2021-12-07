@@ -1,6 +1,8 @@
 import 'dart:io';
 import 'dart:async';
 
+import 'model/board.dart';
+
 String dbFileName = "mock_data.txt";
 File dbFile = File(dbFileName);
 
@@ -20,14 +22,20 @@ List<WebSocket> sockets = [];
 
 main() {
   print("Web socket started");
-  runZoned(() async {
-    HttpServer server = await HttpServer.bind("127.0.0.1", 4040);
-    await for (var request in server) {
-      WebSocket socket = await WebSocketTransformer.upgrade(request);
-      sockets.add(socket);
-      socket.listen(addCoordinate).onDone(() {
-        onClose(socket);
-      });
-    }
-  }, onError: (e) => print("Error occurred." + e.toString()));
+  // runZoned(() async {
+  //   HttpServer server = await HttpServer.bind("127.0.0.1", 4040);
+  //   await for (var request in server) {
+  //     WebSocket socket = await WebSocketTransformer.upgrade(request);
+  //     sockets.add(socket);
+  //     socket.listen(addCoordinate).onDone(() {
+  //       onClose(socket);
+  //     });
+  //   }
+  // }, onError: (e) => print("Error occurred." + e.toString()));
+
+  Board board = Board(2, 4);
+  board.loadJewels();
+  board.addPlayer();
+  board.addPlayer();
+  print(board.cells);
 }
