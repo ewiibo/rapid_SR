@@ -39,13 +39,24 @@ class Board {
       y = Random().nextInt(size);
     } while (cells[x][y] != nullShape || cells[x][y] is Jewel);
     cells[x][y] = Player(
-        "pseudo ${_players.length}", _players.length, x, y, 'color', size);
+        "pseudo ${_players.length}", 0, _players.length, x, y, 'color', size);
     _players.add(cells[x][y]);
   }
 
   // get a player by his id
   Player getPlayer(int idPlayer) {
     return _players.firstWhere((player) => player.id == idPlayer);
+  }
+
+  int getIndexPlayer(int idPlayer) {
+    return _players.indexWhere((player) => player.id == idPlayer);
+  }
+
+  setPlayer(Player player) {
+    getPlayer(player.id)
+      ..x = player.x
+      ..y = player.y
+      ..score = player.score;
   }
 
   movePlayer(Player player, Move move) {
@@ -72,6 +83,23 @@ class Board {
         break;
       default:
         return;
+    }
+    // check if there is not an other player in the position
+    final otherPlayer =
+        _players.indexWhere((elt) => elt.x == player.x && elt.y == player.y);
+    if (otherPlayer != -1) return;
+    // update coordonate of the player
+    final playerIndex = getIndexPlayer(player.id);
+    _players[playerIndex]
+      ..x = player.x
+      ..y = player.y;
+
+    final index = _jewels
+        .indexWhere((jewel) => jewel.x == player.x && jewel.y == player.y);
+    if (index != -1) {
+      print("Jewel trouvé");
+      _players[playerIndex].score++;
+      _jewels.removeAt(index);
     }
   }
 
