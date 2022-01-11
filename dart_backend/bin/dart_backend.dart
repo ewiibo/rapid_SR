@@ -33,9 +33,23 @@ main() {
   //   }
   // }, onError: (e) => print("Error occurred." + e.toString()));
 
-  Board board = Board(2, 4);
+  Board board = Board(2, 8);
   board.loadJewels();
   board.addPlayer();
   board.addPlayer();
-  print(board.cells);
+  //print(board.cells);
+  print("\n");
+  var player = board.getPlayer(0);
+  print(player);
+
+  print("\n");
+  board.movePlayer(player, Move.bottom);
+  board.movePlayer(player, Move.bottom);
+  board.movePlayer(player, Move.bottom);
+  board.movePlayer(player, Move.bottom);
+  board.movePlayer(player, Move.bottom);
+  board.movePlayer(player, Move.bottom);
+  print(player);
+
+  //print(board.toJson());
 }
