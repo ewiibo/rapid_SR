@@ -12,5 +12,12 @@ class Player extends Shape {
     return '''Player { pseudi : $pseudo, score : $score, ${super.toString()}}''';
   }
 
-  Map<String, dynamic> toJson() => {'idPlayer': super.id, 'x': super.x};
+  Map<String, dynamic> toJson() => {
+        'idPlayer': id,
+        'x': x,
+        'y': y,
+        'color': color,
+        'size': size,
+        'score': score
+      };
 }
