@@ -16,6 +16,7 @@ class Player extends Shape {
         'idPlayer': id,
         'x': x,
         'y': y,
+        'pseudo': pseudo,
         'color': color,
         'size': size,
         'score': score

@@ -25,6 +25,7 @@ processRequest(data) async {
       responseData['messageType'] = "connected";
       responseData['idPlayer'] = player.id;
       responseData['players'] = board.players;
+      responseData['jewels'] = board.jewels;
       break;
     case 'finish':
       break;

@@ -9,4 +9,12 @@ class Jewel extends Shape {
     return '''
 Jewel ${super.toString()}''';
   }
+
+  Map<String, dynamic> toJson() => {
+        'idPlayer': id,
+        'x': x,
+        'y': y,
+        'color': color,
+        'size': size,
+      };
 }
