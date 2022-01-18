@@ -1,7 +1,9 @@
 import 'package:test/test.dart';
+import 'dart:io';
 import '../bin/model/board.dart';
 import '../bin/model/jewel.dart';
 import '../bin/model/player.dart';
+import '../bin/game.dart';
 
 void main() {
   test('Board creation', () {
@@ -27,5 +29,17 @@ void main() {
 
     // expect(player1.x, x - 1);
     // expect(player1.y, y + 1);
+  });
+
+  test('connection test', () async {
+    Game game = Game();
+    await game.createServer();
+
+    // WebSocket.connect(
+    //   'ws://127.0.0.1:4040/',
+    // );
+    // var socket = await Socket.connect("ws://127.0.0.1", 4040);
+    // WebSocket.fromUpgradedSocket(socket);
+    expect(game.sockets.length, 1);
   });
 }
