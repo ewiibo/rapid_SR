@@ -7,17 +7,14 @@ import 'shape.dart';
 enum Move { left, right, top, bottom }
 
 class Board {
-  int numberOfJewels;
   int size;
-  late List<List<Shape>> cells;
   final players = <Player>[];
   final jewels = <Jewel>[];
   //must create a object for representing the null shape beacause of null-safety.
-  final nullShape = Shape(0, 0, 0, '', 0);
-  Board(this.numberOfJewels, this.size);
+  Board(this.size);
 
   // create jewels at random position.
-  loadJewels() {
+  loadJewels(int numberOfJewels) {
     int x, y;
     for (int i = 0; i < numberOfJewels; i++) {
       do {
@@ -117,8 +114,7 @@ class Board {
 
   //
   //TODO(sanfane)return a json format of the jewels and players.
-  Map<String, dynamic> toJson() =>
-      {'numberOfJewels': numberOfJewels, 'players': players, 'jewels': jewels};
+  Map<String, dynamic> toJson() => {'players': players, 'jewels': jewels};
   getJsonFromList(List<dynamic> list) {
     String result = '';
     for (var e in list) {

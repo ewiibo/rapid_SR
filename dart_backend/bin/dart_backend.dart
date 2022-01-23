@@ -1,11 +1,10 @@
 import 'dart:async';
-
-import 'game.dart';
+import 'business/game_core.dart';
 
 main() {
-  print("Web socket started");
+  print("[INFO] Server started .........");
   runZoned(() async {
-    Game game = Game();
+    GameCore game = GameCore();
     await game.createServer();
   }, onError: (e) => print("Error occurred." + e.toString()));
 

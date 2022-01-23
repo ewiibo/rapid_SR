@@ -3,12 +3,12 @@ import 'dart:io';
 import '../bin/model/board.dart';
 import '../bin/model/jewel.dart';
 import '../bin/model/player.dart';
-import '../bin/game.dart';
+import '../bin/business/game_core.dart';
 
 void main() {
   test('Board creation', () {
-    Board board = Board(7, 4);
-    board.loadJewels();
+    Board board = Board(4);
+    board.loadJewels(7);
 
     expect(board.jewels.length, 7);
     board.addPlayer();
@@ -32,7 +32,7 @@ void main() {
   });
 
   test('connection test', () async {
-    Game game = Game();
+    GameCore game = GameCore();
     await game.createServer();
 
     // WebSocket.connect(

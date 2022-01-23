@@ -1,24 +1,23 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'model/board.dart';
+import '../model/board.dart';
 
-class Game {
-  late List<WebSocket> sockets;
+class GameCore {
+  late Set<WebSocket> sockets;
+  late Map<String, List<WebSocket>> mapSockets;
+  // late List<Board> boards; For having multiple session of game
   late Board board;
-  late bool isStarted;
-  late bool isFinished;
-  Game() {
-    sockets = [];
-    isStarted = false;
-    isStarted = false;
+  GameCore() {
+    sockets = {};
   }
+
   createServer() async {
     HttpServer server = await HttpServer.bind("127.0.0.1", 4040);
     await for (var request in server) {
       WebSocket socket = await WebSocketTransformer.upgrade(request);
-      print("Ajout d'un client");
       sockets.add(socket);
+      print("[INFO] Client connection ....");
       socket.listen(processRequest).onDone(() {
         onClose(socket);
       });
@@ -31,6 +30,7 @@ class Game {
 
   onClose(WebSocket socket) {
     sockets.remove(socket);
+    print("[INFO] client disconnected ....");
   }
 
   //TODO(sanfane) get movement message from front
@@ -43,7 +43,8 @@ class Game {
     switch (requestData['messageType']) {
       case 'create':
         print('dans create');
-        board = Board(requestData['jewel'], requestData['size']);
+        board = Board(requestData['size']);
+        board.loadJewels(requestData['jewel']);
 
         responseData['messageType'] = "created";
         responseData['boardId'] = 1;
@@ -57,7 +58,6 @@ class Game {
         responseData['jewels'] = board.jewels;
         break;
       case 'start':
-        isStarted = true;
         responseData['messageType'] = 'started';
         break;
       case 'move':
@@ -67,15 +67,13 @@ class Game {
         responseData['players'] = board.players;
         responseData['jewels'] = board.jewels;
 
-        if (board.jewels.length == 0) {
+        if (board.jewels.isEmpty) {
           responseData['messageType'] = 'finished';
-          isFinished = true;
         }
 
         break;
       case 'finish':
         responseData['messageType'] = 'finished';
-        isFinished = true;
         break;
       default:
     }
