@@ -13,7 +13,8 @@ class GameCore {
   }
 
   createServer() async {
-    HttpServer server = await HttpServer.bind("127.0.0.1", 4040);
+    HttpServer server = await HttpServer.bind(InternetAddress.anyIPv4, 4040);
+    print("[INFO] Server running on : ${InternetAddress.anyIPv4.address}");
     await for (var request in server) {
       WebSocket socket = await WebSocketTransformer.upgrade(request);
       sockets.add(socket);
@@ -72,6 +73,8 @@ class GameCore {
         }
 
         break;
+
+      //TODO (sanfane) Add message for getting game by Id
       case 'finish':
         responseData['messageType'] = 'finished';
         break;

@@ -11,7 +11,7 @@ Jewel ${super.toString()}''';
   }
 
   Map<String, dynamic> toJson() => {
-        'idPlayer': id,
+        'id': id,
         'x': x,
         'y': y,
         'color': color,
