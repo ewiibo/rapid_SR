@@ -2,36 +2,14 @@ import 'dart:convert';
 import 'dart:io';
 
 import '../model/board.dart';
+import 'network_service.dart';
 
 class GameCore {
-  late Set<WebSocket> sockets;
-  late Map<String, List<WebSocket>> mapSockets;
-  // late List<Board> boards; For having multiple session of game
   late Board board;
+  late NetworkService networkService;
   GameCore() {
-    sockets = {};
-  }
-
-  createServer() async {
-    HttpServer server = await HttpServer.bind(InternetAddress.anyIPv4, 4040);
-    print("[INFO] Server running on : ${InternetAddress.anyIPv4.address}");
-    await for (var request in server) {
-      WebSocket socket = await WebSocketTransformer.upgrade(request);
-      sockets.add(socket);
-      print("[INFO] Client connection ....");
-      socket.listen(processRequest).onDone(() {
-        onClose(socket);
-      });
-    }
-  }
-
-  addClient(WebSocket socket) {
-    sockets.add(socket);
-  }
-
-  onClose(WebSocket socket) {
-    sockets.remove(socket);
-    print("[INFO] client disconnected ....");
+    networkService = NetworkService(processRequestCallback: processRequest);
+    networkService.createServer();
   }
 
   //TODO(sanfane) get movement message from front
@@ -82,7 +60,7 @@ class GameCore {
     }
 
     print(responseData.toString());
-    for (var socket in sockets) {
+    for (var socket in networkService.sockets) {
       socket.add(jsonEncode(responseData));
     }
   }

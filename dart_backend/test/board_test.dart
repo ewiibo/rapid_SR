@@ -33,13 +33,12 @@ void main() {
 
   test('connection test', () async {
     GameCore game = GameCore();
-    await game.createServer();
 
     // WebSocket.connect(
     //   'ws://127.0.0.1:4040/',
     // );
     // var socket = await Socket.connect("ws://127.0.0.1", 4040);
     // WebSocket.fromUpgradedSocket(socket);
-    expect(game.sockets.length, 1);
+    expect(game.networkService.sockets.length, 1);
   });
 }
