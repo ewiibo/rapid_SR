@@ -1,6 +1,8 @@
 import 'dart:async';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 
 class BoardView extends StatefulWidget {
@@ -29,8 +31,14 @@ class _BoardViewState extends State<BoardView> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          const Spacer(
-            flex: 1,
+          Container(
+            alignment: Alignment.topLeft,
+            child: SizedBox(
+              height: 35,
+              width: 150,
+              child: ElevatedButton(
+                  onPressed: startMoving, child: const Text('Start')),
+            ),
           ),
           Container(
             color: Colors.grey[300],
@@ -65,6 +73,46 @@ class _BoardViewState extends State<BoardView> {
                   },
                 )),
           ),
+          Container(
+            height: 35,
+            width: 550,
+            alignment: Alignment.center,
+            child: SizedBox(
+              height: 35,
+              width: 183,
+              child: ElevatedButton(
+                  onPressed: () => moveUp(), child: const Text('MoveUp')),
+            ),
+          ),
+          Container(
+              height: 35,
+              width: 550,
+              alignment: Alignment.center,
+              child: Row(
+                children: [
+                  SizedBox(
+                    height: 35,
+                    width: 183,
+                    child: ElevatedButton(
+                        onPressed: () => moveLeft(),
+                        child: const Text('MoveLeft')),
+                  ),
+                  SizedBox(
+                    height: 35,
+                    width: 183,
+                    child: ElevatedButton(
+                        onPressed: () => moveDown(),
+                        child: const Text('MoveDown')),
+                  ),
+                  SizedBox(
+                    height: 35,
+                    width: 183,
+                    child: ElevatedButton(
+                        onPressed: () => moveRight(),
+                        child: const Text('moveRight')),
+                  ),
+                ],
+              )),
         ],
       ),
     );
@@ -136,37 +184,3 @@ class _BoardViewState extends State<BoardView> {
     }
   }
 }
-
-
-
-
-          // SizedBox(
-          //   height: 20,
-          //   child: ElevatedButton(
-          //       onPressed: startMoving, child: const Text('Start')),
-          // ),
-          // SizedBox(
-          //   height: 20,
-          //   child: ElevatedButton(
-          //       onPressed: () => getPosition(), child: const Text('Position')),
-          // ),
-          // SizedBox(
-          //   height: 20,
-          //   child: ElevatedButton(
-          //       onPressed: () => moveUp(), child: const Text('MoveUp')),
-          // ),
-          // SizedBox(
-          //   height: 20,
-          //   child: ElevatedButton(
-          //       onPressed: () => moveLeft(), child: const Text('MoveLeft')),
-          // ),
-          // SizedBox(
-          //   height: 20,
-          //   child: ElevatedButton(
-          //       onPressed: () => moveDown(), child: const Text('MoveDown')),
-          // ),
-          // SizedBox(
-          //   height: 20,
-          //   child: ElevatedButton(
-          //       onPressed: () => moveRight(), child: const Text('MoveRight')),
-          // ),
