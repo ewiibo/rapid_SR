@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 
 import '../model/board.dart';
 import 'network_service.dart';
@@ -7,9 +6,16 @@ import 'network_service.dart';
 class GameCore {
   late Board board;
   late NetworkService networkService;
-  GameCore() {
-    networkService = NetworkService(processRequestCallback: processRequest);
-    networkService.createServer();
+  GameCore({String? address}) {
+    networkService = NetworkService(
+        address: address, processRequestCallback: processRequest);
+  }
+  runServer() async {
+    await networkService.createServer();
+  }
+
+  stopServer() async {
+    await networkService.stopServer();
   }
 
   //TODO(sanfane) get movement message from front

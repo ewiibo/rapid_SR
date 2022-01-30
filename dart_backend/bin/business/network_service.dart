@@ -4,11 +4,14 @@ class NetworkService {
   List<WebSocket> sockets = [];
   late HttpServer server;
   int? port;
+  String? address;
   Function(dynamic) processRequestCallback;
-  NetworkService({required this.processRequestCallback, this.port = 4040});
+  NetworkService(
+      {required this.processRequestCallback, this.address, this.port = 4040});
 
   createServer() async {
-    server = await HttpServer.bind(InternetAddress.anyIPv4, port!);
+    print(address ?? InternetAddress.anyIPv4);
+    server = await HttpServer.bind(address ?? InternetAddress.anyIPv4, port!);
     print("[INFO] Server running on : ${InternetAddress.anyIPv4.address}");
     await for (var request in server) {
       WebSocket socket = await WebSocketTransformer.upgrade(request);
@@ -18,6 +21,11 @@ class NetworkService {
         onClose(socket);
       });
     }
+  }
+
+  stopServer() async {
+    await server.close();
+    print("Server stopped");
   }
 
   addClient(WebSocket socket) {

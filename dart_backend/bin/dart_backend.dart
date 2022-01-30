@@ -4,7 +4,7 @@ import 'business/game_core.dart';
 main() {
   print("[INFO] Server started .........");
   runZoned(() async {
-    GameCore();
+    await GameCore().runServer();
   }, onError: (e) => print("Error occurred." + e.toString()));
 
   // Board board = Board(50, 8);
