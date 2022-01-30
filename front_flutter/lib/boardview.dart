@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'gamecommunication.dart';
@@ -22,8 +23,19 @@ class _BoardViewState extends State<BoardView> {
   // List<int> ownJewels = [];
 
   @override
+  void initState() {
+    super.initState();
+
+    ///
+    /// On écoute tous les messages relatifs au jeu+
+    ///
+    game.addListener(_onAction);
+  }
+
+  @override
   void dispose() {
     _focusNode.dispose();
+    game.removeListener(_onAction);
     super.dispose();
   }
 
@@ -82,7 +94,7 @@ class _BoardViewState extends State<BoardView> {
               height: 35,
               width: 183,
               child: ElevatedButton(
-                  onPressed: () => moveUp(), child: const Text('MoveUp')),
+                  onPressed: () => _onUpMove(), child: const Text('MoveUp')),
             ),
           ),
           Container(
@@ -95,21 +107,21 @@ class _BoardViewState extends State<BoardView> {
                     height: 35,
                     width: 183,
                     child: ElevatedButton(
-                        onPressed: () => moveLeft(),
+                        onPressed: () => _onLeftMove(),
                         child: const Text('MoveLeft')),
                   ),
                   SizedBox(
                     height: 35,
                     width: 183,
                     child: ElevatedButton(
-                        onPressed: () => moveDown(),
+                        onPressed: () => _onDownMove(),
                         child: const Text('MoveDown')),
                   ),
                   SizedBox(
                     height: 35,
                     width: 183,
                     child: ElevatedButton(
-                        onPressed: () => moveRight(),
+                        onPressed: () => _onRightMove(),
                         child: const Text('moveRight')),
                   ),
                 ],
@@ -119,8 +131,50 @@ class _BoardViewState extends State<BoardView> {
     );
   }
 
+  /// ---------------------------------------------------------
+  /// L'adversaire a émis une action.
+  /// Gestion de ces actions.
+  /// ---------------------------------------------------------
+  _onAction(message) {
+    switch (message["messageType"]) {
+      case 'moved':
+        for (Map el in message["players"]) {
+          moveTo(indexCalcul(el['x'], el['y']));
+        }
+        break;
+    }
+  }
+
   _onGameJoin() {
-    game.send('connect', size.toString());
+    game.send('connect', size, 10, game.playerId, game.playerName, "");
+
+    /// Forcer un rafraîchissement
+    setState(() {});
+  }
+
+  _onLeftMove() {
+    game.send('move', size, 10, game.playerId, game.playerName, "left");
+
+    /// Forcer un rafraîchissement
+    setState(() {});
+  }
+
+  _onRightMove() {
+    game.send('move', size, 10, game.playerId, game.playerName, "right");
+
+    /// Forcer un rafraîchissement
+    setState(() {});
+  }
+
+  _onDownMove() {
+    game.send('move', size, 10, game.playerId, game.playerName, "bottom");
+
+    /// Forcer un rafraîchissement
+    setState(() {});
+  }
+
+  _onUpMove() {
+    game.send('move', size, 10, game.playerId, game.playerName, "top");
 
     /// Forcer un rafraîchissement
     setState(() {});
@@ -194,21 +248,18 @@ class _BoardViewState extends State<BoardView> {
   }
 
   void _handleKeyEvent(RawKeyEvent event) {
-    print("in1");
-    if (event.runtimeType.toString() == "RawKeyDownEvent") {
-      print("in2");
+    if (event.runtimeType == RawKeyDownEvent) {
       if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
-        moveUp();
+        _onUpMove();
       }
       if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
-        print("in3");
-        moveDown();
+        _onDownMove();
       }
       if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
-        moveRight();
+        _onRightMove();
       }
       if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
-        moveLeft();
+        _onLeftMove();
       }
     }
   }

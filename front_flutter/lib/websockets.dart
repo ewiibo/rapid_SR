@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:universal_io/io.dart';
 import 'package:web_socket_channel/io.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 
 ///
 /// Variable globale d'accès aux WebSockets
@@ -25,7 +26,9 @@ class WebSocketsNotifications {
   ///
   /// Le canal de communication WebSocket
   ///
-  IOWebSocketChannel _channel = IOWebSocketChannel.connect(_SERVER_ADDRESS);
+  // IOWebSocketChannel _channel = IOWebSocketChannel.connect('ws://127.0.0.1:4040');
+  WebSocketChannel _channel =
+      WebSocketChannel.connect(Uri.parse('ws://127.0.0.1:4040'));
 
   ///
   /// La connexion est-elle établie ?
@@ -45,13 +48,13 @@ class WebSocketsNotifications {
     ///
     /// Juste au cas..., ferture d'un autre connexion
     ///
-    reset();
+    //reset();
 
     ///
     /// Ouvrir une nouvelle communication WebSockets
     ///
     try {
-      _channel = IOWebSocketChannel.connect(_SERVER_ADDRESS);
+      _channel = WebSocketChannel.connect(Uri.parse('ws://127.0.0.1:4040'));
 
       ///
       /// Démarrage de l'écoute des nouveaux messages
@@ -69,23 +72,20 @@ class WebSocketsNotifications {
   /// Fermer la communication WebSockets
   /// ----------------------------------------------------------
   reset() {
-    if (_channel != null) {
-      if (_channel.sink != null) {
-        _channel.sink.close();
-        _isOn = false;
-      }
-    }
+    _channel.sink.close();
+    _isOn = false;
   }
 
   /// ---------------------------------------------------------
   /// Envoie un message au serveur
   /// ---------------------------------------------------------
   send(String message) {
-    if (_channel != null) {
-      if (_channel.sink != null && _isOn) {
-        _channel.sink.add(message);
-      }
-    }
+    _channel.sink.add(message);
+    // if (_channel != null) {
+    //   if (_channel.sink != null && _isOn) {
+    //     _channel.sink.add(message);
+    //   }
+    // }
   }
 
   /// ---------------------------------------------------------

@@ -14,12 +14,17 @@ class GameCommunication {
   ///
   /// A la première initialisation, le joueur n'a pas encore de nom
   ///
-  String _playerName = "";
+  String _playerName = "Kiko";
 
   ///
-  /// Avant d'émettre l'action "join", le joueur n'a pas encore d'identifiant unique
+  /// Avant d'émettre l'action "connect", le joueur n'a pas encore d'identifiant unique
   ///
-  String _playerID = "";
+  int _playerID = 0;
+
+  ///
+  ///
+  ///
+  int _nbrJewel = 0;
 
   factory GameCommunication() {
     return _game;
@@ -42,6 +47,16 @@ class GameCommunication {
   ///
   String get playerName => _playerName;
 
+  ///
+  /// Retourne l'Id du joueur
+  ///
+  int get playerId => _playerID;
+
+  ///
+  /// Retourne le nombre de Jewel
+  ///
+  int get playerJewel => _nbrJewel;
+
   /// ----------------------------------------------------------
   /// Gestion de tous les messages en provenance du serveur
   /// ----------------------------------------------------------
@@ -59,9 +74,9 @@ class GameCommunication {
       /// renvoie l'identifiant du joueur.
       /// Mémorisons-le
       ///
-      case 'created':
-        print("ok");
-        // _playerID = message["data"];
+      case 'connected':
+        _playerID = message["idPlayer"];
+        print(_playerID);
         break;
 
       ///
@@ -79,12 +94,14 @@ class GameCommunication {
   /// ----------------------------------------------------------
   /// Méthode d'envoi des messages au serveur
   /// ----------------------------------------------------------
-  send(String action, String data) {
+  ///  Data : ["size", "pseudo, ", int imoveDirection"]
+  send(String action, int size, int jewel, int id, String pseudo,
+      String moveDir) {
     ///
     /// Quand un joueur rejoint, nous devons mémoriser son nom
     ///
     if (action == 'connect') {
-      _playerName = data;
+      _playerName = pseudo;
     }
 
     ///
@@ -92,9 +109,16 @@ class GameCommunication {
     /// Pour envoyer le message, nous transformons l'objet
     /// JSON en chaîne de caractères
     ///
-    sockets.send(
-        json.encode({"messageType": action, "size": data, "jewel": 10, "color": 'red', "pseudo": "Kiko"}));
-     }
+    sockets.send(json.encode({
+      "messageType": action,
+      "size": size,
+      "jewel": jewel,
+      "color": 'red', //à remove
+      "id": id,
+      "pseudo": playerName,
+      "move": moveDir
+    }));
+  }
 
   /// ==========================================================
   ///
