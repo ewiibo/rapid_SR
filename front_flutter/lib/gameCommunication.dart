@@ -76,7 +76,6 @@ class GameCommunication {
       ///
       case 'connected':
         _playerID = message["idPlayer"];
-        print(_playerID);
         break;
 
       ///
@@ -113,7 +112,6 @@ class GameCommunication {
       "messageType": action,
       "size": size,
       "jewel": jewel,
-      "color": 'red', //à remove
       "id": id,
       "pseudo": playerName,
       "move": moveDir

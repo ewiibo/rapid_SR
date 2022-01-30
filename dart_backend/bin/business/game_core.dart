@@ -55,6 +55,8 @@ class GameCore {
         if (!gameStarted) {
           gameStarted = true;
           responseData['messageType'] = 'started';
+          responseData['players'] = board!.players;
+          responseData['jewels'] = board!.jewels;
         }
         break;
       case 'move':

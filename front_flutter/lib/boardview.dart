@@ -18,9 +18,9 @@ class _BoardViewState extends State<BoardView> {
   late int id = 1;
   int size = 20;
   int position = 0;
-  int addPosition = 57;
-  List<int> jewels = [1, 12, 35, 4, 50, 123, 22, 19];
-  // List<int> ownJewels = [];
+  List<dynamic> players = [];
+  List<dynamic> jewels1 = [];
+  List<int> jewels = [];
 
   @override
   void initState() {
@@ -78,7 +78,8 @@ class _BoardViewState extends State<BoardView> {
                           return Padding(
                               padding: const EdgeInsets.all(1.5),
                               child: Container(
-                                color: majPosition(index),
+                                // color: majPosition(index),
+                                color: Color(indexColor[index] ?? Colors.black12.value,)
                               ));
                         },
                       ),
@@ -136,17 +137,41 @@ class _BoardViewState extends State<BoardView> {
   /// Gestion de ces actions.
   /// ---------------------------------------------------------
   _onAction(message) {
+    List<int> inJewels = [];
     switch (message["messageType"]) {
+      case 'started':
+        print("in the connected");
+        for (Map el in message["players"]) {
+          moveTo(indexCalcul(el['x'], el['y']));
+        }
+        for (Map el in message["jewels"]) {
+          inJewels.add(indexCalcul(el['x'], el['y']));
+        }
+        setState(() {
+          jewels = inJewels;
+        });
+        break;
       case 'moved':
         for (Map el in message["players"]) {
           moveTo(indexCalcul(el['x'], el['y']));
         }
+        for (Map el in message["jewels"]) {
+          inJewels.add(indexCalcul(el['x'], el['y']));
+        }
+        setState(() {
+          jewels = inJewels;
+        });
+        jewels1 = message['jewels'];
+        players = message['players'];
+        getAllIndex();
+        print(indexColor);
         break;
     }
   }
 
   _onGameJoin() {
     game.send('connect', size, 10, game.playerId, game.playerName, "");
+    game.send('start', size, 10, game.playerId, game.playerName, "");
 
     /// Forcer un rafraîchissement
     setState(() {});
@@ -187,15 +212,16 @@ class _BoardViewState extends State<BoardView> {
     for (int el in jewels) {
       if (index == el) return Colors.green;
     }
-    if (index == position) return Colors.blue;
-    if (index == addPosition)
-      return Colors.red;
+    if (index == position)
+      return Colors.blue;
+    // if (index == addPosition)
+    //   return Colors.red;
     else
       return Colors.white;
   }
 
   indexCalcul(int x, int y) {
-    return x * size + y;
+    return y * size + x;
   }
 
   startMoving() {
@@ -215,6 +241,10 @@ class _BoardViewState extends State<BoardView> {
 
   getPositionByIndex(int index) {
     return {'x': index / size, 'y': index % size};
+  }
+
+  getIndexForPosition(int x, int y) {
+    return x * size + y;
   }
 
   moveTo(int index) {
@@ -261,6 +291,20 @@ class _BoardViewState extends State<BoardView> {
       if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
         _onLeftMove();
       }
+    }
+  }
+
+  Map<int, int> indexColor = {};
+
+  getAllIndex() {
+    indexColor = {};
+    for (var player in players) {
+      indexColor[getIndexForPosition(player['x'], player['y'])] =
+          player['color'];
+    }
+    for (var jewel in jewels1) {
+      indexColor[getIndexForPosition(jewel['x'], jewel['y'])] =
+          Colors.black.value;
     }
   }
 }
