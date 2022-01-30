@@ -2,9 +2,11 @@ import 'dart:convert';
 
 import '../model/board.dart';
 import '../service/network_service.dart';
+import 'player_colors.dart';
 
 class GameCore {
   late Board? board;
+  Set<int> colors = Set.from(playerColors);
   late NetworkService networkService;
   bool gameStarted = false;
   GameCore({String? address}) {
@@ -30,17 +32,24 @@ class GameCore {
     Map<String, dynamic> responseData = {};
     switch (requestData['messageType']) {
       case 'connect':
-        if (board == null) {
-          board = Board(requestData['size']);
-          board?.loadJewels(requestData['jewel']);
+        if (!gameStarted) {
+          if (board == null) {
+            board = Board(requestData['size']);
+            board?.loadJewels(requestData['jewel']);
+            responseData['owner'] = true;
+          }
+          var color = colors.first;
+          colors.remove(color);
+          final player =
+              board?.addPlayer(pseudo: requestData['pseudo'], color: color);
+          responseData['messageType'] = "connected";
+          responseData['idPlayer'] = player!.id;
+          responseData['players'] = board!.players;
+          responseData['jewels'] = board!.jewels;
+        } else {
+          responseData['messageType'] = 'already_started';
         }
-        final player = board?.addPlayer(
-            pseudo: requestData['pseudo'], color: requestData['color']);
-        responseData['messageType'] = "connected";
-        responseData['idPlayer'] = player!.id;
-        responseData['players'] = board!.players;
-        responseData['jewels'] = board!.jewels;
-        responseData['started'] = gameStarted;
+
         break;
       case 'start':
         if (!gameStarted) {
@@ -49,14 +58,15 @@ class GameCore {
         }
         break;
       case 'move':
-        board?.movePlayer(board!.getPlayer(requestData['pseudo']),
-            _getMove(requestData['move']));
+        board?.movePlayer(
+            board!.getPlayer(requestData['id']), _getMove(requestData['move']));
         responseData['messageType'] = "moved";
         responseData['players'] = board!.players;
         responseData['jewels'] = board!.jewels;
 
         if (board!.jewels.isEmpty) {
           board = null;
+          colors = Set.from(playerColors);
           responseData['messageType'] = 'finished';
         }
 
@@ -66,6 +76,8 @@ class GameCore {
       case 'finish':
         responseData['messageType'] = 'finished';
         board = null;
+        colors = Set.from(playerColors);
+
         break;
       default:
     }

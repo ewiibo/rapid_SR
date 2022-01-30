@@ -1,8 +1,7 @@
 import 'shape.dart';
 
 class Jewel extends Shape {
-  Jewel(int id, int x, int y, String color, int size)
-      : super(id, x, y, color, size);
+  Jewel(int id, int x, int y) : super(id, x, y);
 
   @override
   String toString() {
@@ -14,7 +13,5 @@ Jewel ${super.toString()}''';
         'id': id,
         'x': x,
         'y': y,
-        'color': color,
-        'size': size,
       };
 }
