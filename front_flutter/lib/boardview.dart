@@ -1,9 +1,9 @@
 import 'dart:async';
+import 'dart:convert';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
+import 'gamecommunication.dart';
 
 class BoardView extends StatefulWidget {
   const BoardView({Key? key}) : super(key: key);
@@ -14,9 +14,12 @@ class BoardView extends StatefulWidget {
 
 class _BoardViewState extends State<BoardView> {
   final FocusNode _focusNode = FocusNode();
+  late int id = 1;
   int size = 20;
   int position = 0;
-  int newPosition = 150;
+  int addPosition = 57;
+  List<int> jewels = [1, 12, 35, 4, 50, 123, 22, 19];
+  // List<int> ownJewels = [];
 
   @override
   void dispose() {
@@ -37,7 +40,7 @@ class _BoardViewState extends State<BoardView> {
               height: 35,
               width: 150,
               child: ElevatedButton(
-                  onPressed: startMoving, child: const Text('Start')),
+                  onPressed: _onGameJoin, child: const Text('Start')),
             ),
           ),
           Container(
@@ -63,9 +66,7 @@ class _BoardViewState extends State<BoardView> {
                           return Padding(
                               padding: const EdgeInsets.all(1.5),
                               child: Container(
-                                color: index == position
-                                    ? Colors.black87
-                                    : Colors.white,
+                                color: majPosition(index),
                               ));
                         },
                       ),
@@ -118,9 +119,31 @@ class _BoardViewState extends State<BoardView> {
     );
   }
 
+  _onGameJoin() {
+    game.send('connect', size.toString());
+
+    /// Forcer un rafraîchissement
+    setState(() {});
+  }
+
 //
 //Moving Functions
 //
+  majPosition(int index) {
+    for (int el in jewels) {
+      if (index == el) return Colors.green;
+    }
+    if (index == position) return Colors.blue;
+    if (index == addPosition)
+      return Colors.red;
+    else
+      return Colors.white;
+  }
+
+  indexCalcul(int x, int y) {
+    return x * size + y;
+  }
+
   startMoving() {
     Timer.periodic(const Duration(milliseconds: 200), (timer) {
       setState(() {
@@ -129,12 +152,15 @@ class _BoardViewState extends State<BoardView> {
     });
   }
 
+  // applyChange(int id) {
+  //   if (GameCommunication.serverMessage['players'][0].idPlayer == id) {
+  //     majPosition(indexCalcul(
+  //         GameCommunication.serverMessage['players'][0].x, GameCommunication.serverMessage['players'][0].y));
+  //   }
+  // }
+
   getPositionByIndex(int index) {
     return {'x': index / size, 'y': index % size};
-  }
-
-  getPosition() {
-    print(position);
   }
 
   moveTo(int index) {
@@ -168,11 +194,14 @@ class _BoardViewState extends State<BoardView> {
   }
 
   void _handleKeyEvent(RawKeyEvent event) {
+    print("in1");
     if (event.runtimeType.toString() == "RawKeyDownEvent") {
+      print("in2");
       if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
         moveUp();
       }
       if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+        print("in3");
         moveDown();
       }
       if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
