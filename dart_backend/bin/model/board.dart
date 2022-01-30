@@ -71,14 +71,14 @@ class Board {
         }
         break;
       case Move.top:
-        if (player.y - 1 != 0) {
+        if (player.y - 1 != -1) {
           player.y--;
         } else {
           return;
         }
         break;
       case Move.left:
-        if (player.x - 1 != 0) {
+        if (player.x - 1 != -1) {
           player.x--;
         } else {
           return;

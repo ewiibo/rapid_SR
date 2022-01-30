@@ -32,20 +32,24 @@ class GameCore {
     Map<String, dynamic> responseData = {};
     switch (requestData['messageType']) {
       case 'connect':
-        if (board == null) {
-          board = Board(requestData['size']);
-          board?.loadJewels(requestData['jewel']);
-          responseData['owner'] = true;
+        if (!gameStarted) {
+          if (board == null) {
+            board = Board(requestData['size']);
+            board?.loadJewels(requestData['jewel']);
+            responseData['owner'] = true;
+          }
+          var color = colors.first;
+          colors.remove(color);
+          final player =
+              board?.addPlayer(pseudo: requestData['pseudo'], color: color);
+          responseData['messageType'] = "connected";
+          responseData['idPlayer'] = player!.id;
+          responseData['players'] = board!.players;
+          responseData['jewels'] = board!.jewels;
+        } else {
+          responseData['messageType'] = 'already_started';
         }
-        var color = colors.first;
-        colors.remove(color);
-        final player =
-            board?.addPlayer(pseudo: requestData['pseudo'], color: color);
-        responseData['messageType'] = "connected";
-        responseData['idPlayer'] = player!.id;
-        responseData['players'] = board!.players;
-        responseData['jewels'] = board!.jewels;
-        responseData['started'] = gameStarted;
+
         break;
       case 'start':
         if (!gameStarted) {
@@ -54,8 +58,8 @@ class GameCore {
         }
         break;
       case 'move':
-        board?.movePlayer(board!.getPlayer(requestData['pseudo']),
-            _getMove(requestData['move']));
+        board?.movePlayer(
+            board!.getPlayer(requestData['id']), _getMove(requestData['move']));
         responseData['messageType'] = "moved";
         responseData['players'] = board!.players;
         responseData['jewels'] = board!.jewels;
