@@ -2,9 +2,11 @@ import 'dart:convert';
 
 import '../model/board.dart';
 import '../service/network_service.dart';
+import 'player_colors.dart';
 
 class GameCore {
   late Board? board;
+  Set<int> colors = Set.from(playerColors);
   late NetworkService networkService;
   bool gameStarted = false;
   GameCore({String? address}) {
@@ -33,9 +35,12 @@ class GameCore {
         if (board == null) {
           board = Board(requestData['size']);
           board?.loadJewels(requestData['jewel']);
+          responseData['owner'] = true;
         }
-        final player = board?.addPlayer(
-            pseudo: requestData['pseudo'], color: requestData['color']);
+        var color = colors.first;
+        colors.remove(color);
+        final player =
+            board?.addPlayer(pseudo: requestData['pseudo'], color: color);
         responseData['messageType'] = "connected";
         responseData['idPlayer'] = player!.id;
         responseData['players'] = board!.players;
@@ -57,6 +62,7 @@ class GameCore {
 
         if (board!.jewels.isEmpty) {
           board = null;
+          colors = Set.from(playerColors);
           responseData['messageType'] = 'finished';
         }
 
@@ -66,6 +72,8 @@ class GameCore {
       case 'finish':
         responseData['messageType'] = 'finished';
         board = null;
+        colors = Set.from(playerColors);
+
         break;
       default:
     }
