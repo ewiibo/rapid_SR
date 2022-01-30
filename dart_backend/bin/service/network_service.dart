@@ -10,7 +10,6 @@ class NetworkService {
       {required this.processRequestCallback, this.address, this.port = 4040});
 
   createServer() async {
-    print(address ?? InternetAddress.anyIPv4);
     server = await HttpServer.bind(address ?? InternetAddress.anyIPv4, port!);
     print("[INFO] Server running on : ${InternetAddress.anyIPv4.address}");
     await for (var request in server) {
