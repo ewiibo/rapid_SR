@@ -162,6 +162,14 @@ class _BoardViewState extends State<BoardView> {
   _onAction(message) {
     List<int> inJewels = [];
     switch (message["messageType"]) {
+      case 'connected':
+        for (Map el in message["players"]) {
+          if (el["pseudo"] == _pseudoController.text) {
+            myId = message["idPlayer"];
+            break;
+          }
+        }
+        break;
       case 'started':
         print("in the connected");
         for (Map el in message["players"]) {
@@ -195,7 +203,6 @@ class _BoardViewState extends State<BoardView> {
   }
 
   _onGameJoin() {
-    print(game.playerId.toString());
     game.send('start', size, 10, game.playerId, _pseudoController.text, "");
 
     /// Forcer un rafraîchissement

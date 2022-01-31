@@ -30,11 +30,13 @@ class GameCommunication {
     Map message = json.decode(serverMessage);
 
     switch (message["messageType"]) {
-      case 'connected':
-        _playerID = message["idPlayer"];
-        print("player ID " + playerId.toString());
-        break;
-
+      // case 'connected':
+      // for (Map el in message["players"]) {
+      //     el[]
+      //   }
+      // _playerID = message["idPlayer"];
+      //   print("player ID " + playerId.toString());
+      //   break;
       default:
         _listeners.forEach((Function callback) {
           callback(message);
