@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:front/widget/input_field.dart';
 import 'gamecommunication.dart';
 
 class BoardView extends StatefulWidget {
@@ -15,7 +16,7 @@ class BoardView extends StatefulWidget {
 
 class _BoardViewState extends State<BoardView> {
   final FocusNode _focusNode = FocusNode();
-  late int id = 1;
+  int myId = 0;
   int size = 20;
   int position = 0;
   List<dynamic> players = [];
@@ -39,6 +40,7 @@ class _BoardViewState extends State<BoardView> {
     super.dispose();
   }
 
+  final TextEditingController _pseudoController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -46,6 +48,29 @@ class _BoardViewState extends State<BoardView> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
+          Column(
+            children: [
+              CustumTextInput(
+                controller: _pseudoController,
+                label: "Nom du joueur",
+              ),
+              const SizedBox(
+                height: 30,
+              ),
+              ElevatedButton(
+                onPressed: _onConnect,
+                child: const SizedBox(
+                  height: 30,
+                  width: 180,
+                  child: Center(
+                    child: Text(
+                      "Se connecter",
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
           Container(
             alignment: Alignment.topLeft,
             child: SizedBox(
@@ -57,8 +82,8 @@ class _BoardViewState extends State<BoardView> {
           ),
           Container(
             color: Colors.grey[300],
-            height: 550,
-            width: 550,
+            height: 500,
+            width: 500,
             child: RawKeyboardListener(
                 focusNode: _focusNode,
                 autofocus: true,
@@ -78,9 +103,10 @@ class _BoardViewState extends State<BoardView> {
                           return Padding(
                               padding: const EdgeInsets.all(1.5),
                               child: Container(
-                                // color: majPosition(index),
-                                color: Color(indexColor[index] ?? Colors.black12.value,)
-                              ));
+                                  // color: majPosition(index),
+                                  color: Color(
+                                indexColor[index] ?? Colors.black12.value,
+                              )));
                         },
                       ),
                     );
@@ -150,6 +176,9 @@ class _BoardViewState extends State<BoardView> {
         setState(() {
           jewels = inJewels;
         });
+        jewels1 = message['jewels'];
+        players = message['players'];
+        getAllIndex();
         break;
       case 'moved':
         for (Map el in message["players"]) {
@@ -164,20 +193,26 @@ class _BoardViewState extends State<BoardView> {
         jewels1 = message['jewels'];
         players = message['players'];
         getAllIndex();
-        print(indexColor);
         break;
     }
   }
 
   _onGameJoin() {
-    game.send('connect', size, 10, game.playerId, game.playerName, "");
-    game.send('start', size, 10, game.playerId, game.playerName, "");
+    print(game.playerId.toString());
+    game.send('start', size, 10, game.playerId, _pseudoController.text, "");
 
     /// Forcer un rafraîchissement
     setState(() {});
   }
 
+  _onConnect() {
+    print(game.playerId.toString());
+    game.send('connect', size, 10, game.playerId, _pseudoController.text, "");
+  }
+
   _onLeftMove() {
+    print('chat');
+    print(game.playerId.toString());
     game.send('move', size, 10, game.playerId, game.playerName, "left");
 
     /// Forcer un rafraîchissement
@@ -185,6 +220,7 @@ class _BoardViewState extends State<BoardView> {
   }
 
   _onRightMove() {
+    print(game.playerId.toString());
     game.send('move', size, 10, game.playerId, game.playerName, "right");
 
     /// Forcer un rafraîchissement
@@ -192,6 +228,7 @@ class _BoardViewState extends State<BoardView> {
   }
 
   _onDownMove() {
+    print(game.playerId.toString());
     game.send('move', size, 10, game.playerId, game.playerName, "bottom");
 
     /// Forcer un rafraîchissement
@@ -199,6 +236,7 @@ class _BoardViewState extends State<BoardView> {
   }
 
   _onUpMove() {
+    print(game.playerId.toString());
     game.send('move', size, 10, game.playerId, game.playerName, "top");
 
     /// Forcer un rafraîchissement
@@ -232,19 +270,12 @@ class _BoardViewState extends State<BoardView> {
     });
   }
 
-  // applyChange(int id) {
-  //   if (GameCommunication.serverMessage['players'][0].idPlayer == id) {
-  //     majPosition(indexCalcul(
-  //         GameCommunication.serverMessage['players'][0].x, GameCommunication.serverMessage['players'][0].y));
-  //   }
-  // }
-
   getPositionByIndex(int index) {
     return {'x': index / size, 'y': index % size};
   }
 
   getIndexForPosition(int x, int y) {
-    return x * size + y;
+    return y * size + x;
   }
 
   moveTo(int index) {
