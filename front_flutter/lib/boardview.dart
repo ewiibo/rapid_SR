@@ -47,9 +47,12 @@ class _BoardViewState extends State<BoardView> {
         children: [
           Column(
             children: [
-              CustumTextInput(
-                controller: _pseudoController,
-                label: "Nom du joueur",
+              SizedBox(
+                width: 300,
+                child: CustumTextInput(
+                  controller: _pseudoController,
+                  label: "Nom du joueur",
+                ),
               ),
               const SizedBox(
                 height: 30,
@@ -77,73 +80,112 @@ class _BoardViewState extends State<BoardView> {
                   onPressed: _onGameJoin, child: const Text('Start')),
             ),
           ),
-          Container(
-            color: Colors.grey[300],
-            height: 500,
-            width: 500,
-            child: RawKeyboardListener(
-                focusNode: _focusNode,
-                autofocus: true,
-                onKey: _handleKeyEvent,
-                child: AnimatedBuilder(
-                  animation: _focusNode,
-                  builder: (BuildContext context, Widget? child) {
-                    return GestureDetector(
-                      onTap: () {
-                        FocusScope.of(context).requestFocus(_focusNode);
+          Row(
+            children: [
+              Spacer(),
+              Container(
+                color: Colors.grey[300],
+                height: 500,
+                width: 500,
+                child: RawKeyboardListener(
+                    focusNode: _focusNode,
+                    autofocus: true,
+                    onKey: _handleKeyEvent,
+                    child: AnimatedBuilder(
+                      animation: _focusNode,
+                      builder: (BuildContext context, Widget? child) {
+                        return GestureDetector(
+                          onTap: () {
+                            FocusScope.of(context).requestFocus(_focusNode);
+                          },
+                          child: GridView.builder(
+                            itemCount: size * size,
+                            gridDelegate:
+                                SliverGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount: size),
+                            itemBuilder: (BuildContext context, index) {
+                              return Padding(
+                                  padding: const EdgeInsets.all(1.5),
+                                  child: Container(
+                                      // color: majPosition(index),
+                                      color: Color(
+                                    indexColor[index] ?? Colors.black12.value,
+                                  )));
+                            },
+                          ),
+                        );
                       },
-                      child: GridView.builder(
-                        itemCount: size * size,
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: size),
-                        itemBuilder: (BuildContext context, index) {
-                          return Padding(
-                              padding: const EdgeInsets.all(1.5),
-                              child: Container(
-                                  // color: majPosition(index),
-                                  color: Color(
-                                indexColor[index] ?? Colors.black12.value,
-                              )));
-                        },
-                      ),
-                    );
-                  },
-                )),
+                    )),
+              ),
+              Flexible(
+                child: Container(
+                  height: 500,
+                  width: 100,
+                  child: ListView.separated(
+                      itemBuilder: (BuildContext context, int index) {
+                        var player = players[index];
+                        return Row(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              player['pseudo'],
+                              style: const TextStyle(
+                                  fontSize: 17, fontWeight: FontWeight.w600),
+                            ),
+                            const SizedBox(
+                              width: 20,
+                            ),
+                            Text(
+                              player['score'].toString(),
+                              style: const TextStyle(
+                                  fontSize: 17, fontWeight: FontWeight.w600),
+                            )
+                          ],
+                        );
+                      },
+                      separatorBuilder: (BuildContext context, int index) {
+                        return const Divider();
+                      },
+                      itemCount: players.length),
+                ),
+              ),
+            ],
           ),
           Container(
             height: 35,
-            width: 550,
+            width: 480,
             alignment: Alignment.center,
             child: SizedBox(
               height: 35,
-              width: 183,
+              width: 160,
               child: ElevatedButton(
                   onPressed: () => _onUpMove(), child: const Text('MoveUp')),
             ),
           ),
           Container(
               height: 35,
-              width: 550,
+              width: 480,
               alignment: Alignment.center,
               child: Row(
                 children: [
                   SizedBox(
                     height: 35,
-                    width: 183,
+                    width: 160,
                     child: ElevatedButton(
                         onPressed: () => _onLeftMove(),
                         child: const Text('MoveLeft')),
                   ),
                   SizedBox(
                     height: 35,
-                    width: 183,
+                    width: 160,
                     child: ElevatedButton(
                         onPressed: () => _onDownMove(),
                         child: const Text('MoveDown')),
                   ),
                   SizedBox(
                     height: 35,
-                    width: 183,
+                    width: 160,
                     child: ElevatedButton(
                         onPressed: () => _onRightMove(),
                         child: const Text('moveRight')),
