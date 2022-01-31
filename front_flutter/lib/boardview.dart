@@ -27,9 +27,6 @@ class _BoardViewState extends State<BoardView> {
   void initState() {
     super.initState();
 
-    ///
-    /// On écoute tous les messages relatifs au jeu+
-    ///
     game.addListener(_onAction);
   }
 
