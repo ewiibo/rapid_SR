@@ -162,16 +162,7 @@ class _BoardViewState extends State<BoardView> {
   _onAction(message) {
     List<int> inJewels = [];
     switch (message["messageType"]) {
-      case 'connected':
-        for (Map el in message["players"]) {
-          if (el["pseudo"] == _pseudoController.text) {
-            myId = message["idPlayer"];
-            break;
-          }
-        }
-        break;
       case 'started':
-        print("in the connected");
         for (Map el in message["players"]) {
           moveTo(indexCalcul(el['x'], el['y']));
         }
@@ -203,45 +194,40 @@ class _BoardViewState extends State<BoardView> {
   }
 
   _onGameJoin() {
-    game.send('start', size, 10, game.playerId, _pseudoController.text, "");
+    game.send('start', size, 10, myId, _pseudoController.text, "");
 
     /// Forcer un rafraîchissement
     setState(() {});
   }
 
   _onConnect() {
-    print(game.playerId.toString());
-    game.send('connect', size, 10, game.playerId, _pseudoController.text, "");
+    myId = DateTime.now().microsecondsSinceEpoch;
+    game.send('connect', size, 10, myId, _pseudoController.text, "");
   }
 
   _onLeftMove() {
-    print('chat');
-    print(game.playerId.toString());
-    game.send('move', size, 10, game.playerId, game.playerName, "left");
+    game.send('move', size, 10, myId, game.playerName, "left");
 
     /// Forcer un rafraîchissement
     setState(() {});
   }
 
   _onRightMove() {
-    print(game.playerId.toString());
-    game.send('move', size, 10, game.playerId, game.playerName, "right");
+    game.send('move', size, 10, myId, game.playerName, "right");
 
     /// Forcer un rafraîchissement
     setState(() {});
   }
 
   _onDownMove() {
-    print(game.playerId.toString());
-    game.send('move', size, 10, game.playerId, game.playerName, "bottom");
+    game.send('move', size, 10, myId, game.playerName, "bottom");
 
     /// Forcer un rafraîchissement
     setState(() {});
   }
 
   _onUpMove() {
-    print(game.playerId.toString());
-    game.send('move', size, 10, game.playerId, game.playerName, "top");
+    game.send('move', size, 10, myId, game.playerName, "top");
 
     /// Forcer un rafraîchissement
     setState(() {});

@@ -41,7 +41,7 @@ class GameCore {
           var color = colors.first;
           colors.remove(color);
           final player =
-              board?.addPlayer(pseudo: requestData['pseudo'], color: color);
+              board?.addPlayer(pseudo: requestData['pseudo'], color: color, id: requestData['id']);
           responseData['messageType'] = "connected";
           responseData['idPlayer'] = player!.id;
           responseData['players'] = board!.players;

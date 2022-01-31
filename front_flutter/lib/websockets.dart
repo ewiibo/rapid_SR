@@ -5,7 +5,7 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 
 WebSocketsNotifications sockets = WebSocketsNotifications();
 
-const String _SERVER_ADDRESS = "ws://35.180.127.242:4040";
+const String _SERVER_ADDRESS = "ws://127.0.0.1:4040";
 
 class WebSocketsNotifications {
   static final WebSocketsNotifications _sockets =
@@ -18,7 +18,7 @@ class WebSocketsNotifications {
   WebSocketsNotifications._internal();
 
   WebSocketChannel _channel =
-      WebSocketChannel.connect(Uri.parse('ws://35.180.127.242:4040'));
+      WebSocketChannel.connect(Uri.parse('ws://127.0.0.1:4040'));
 
   bool _isOn = false;
 
@@ -26,8 +26,7 @@ class WebSocketsNotifications {
 
   initCommunication() async {
     try {
-      _channel =
-          WebSocketChannel.connect(Uri.parse('ws://35.180.127.242:4040'));
+      _channel = WebSocketChannel.connect(Uri.parse('ws://127.0.0.1:4040'));
 
       _channel.stream.listen(_onReceptionOfMessageFromServer);
     } catch (e) {}

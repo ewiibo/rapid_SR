@@ -34,14 +34,14 @@ class Board {
   }
 
   //create a new player and add him with random position
-  Player addPlayer({pseudo = '', int color = 0}) {
+  Player addPlayer({pseudo = '', int color = 0, int id  = 0}) {
     int x, y;
     do {
       x = Random().nextInt(size);
       y = Random().nextInt(size);
     } while (getObjectAt(x, y).isNotEmpty);
     players.add(Player("pseudo" + pseudo == '' ? players.length : pseudo, 0,
-        players.length, x, y, color, size));
+        id, x, y, color, size));
     return players.last;
   }
 
