@@ -1,11 +1,36 @@
 import 'package:flutter/material.dart';
+import 'package:front/boardview.dart';
 import 'package:front/widget/input_field.dart';
+import 'gamecommunication.dart';
 
-class ConnexionView extends StatelessWidget {
+class ConnexionView extends StatefulWidget {
   ConnexionView({Key? key}) : super(key: key);
 
+  @override
+  State<ConnexionView> createState() => _ConnexionViewState();
+}
+
+class _ConnexionViewState extends State<ConnexionView> {
   //final TextEditingController _addressController = TextEditingController();
   final TextEditingController _pseudoController = TextEditingController();
+  int myId = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    game.addListener((message) {
+      switch (message["messageType"]) {
+        case "connected":
+          Navigator.push(context,
+              MaterialPageRoute(builder: (BuildContext context) {
+            return BoardView(myId: myId, myName: _pseudoController.text, players: message["players"]);
+          }));
+          break;
+        default:
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -35,7 +60,7 @@ class ConnexionView extends StatelessWidget {
                 height: 40,
               ),
               ElevatedButton(
-                onPressed: () {},
+                onPressed: _onConnect,
                 child: const SizedBox(
                   height: 50,
                   width: 250,
@@ -51,5 +76,10 @@ class ConnexionView extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  _onConnect() {
+    myId = DateTime.now().microsecondsSinceEpoch;
+    game.send('connect', 20, 10, myId, _pseudoController.text, "");
   }
 }

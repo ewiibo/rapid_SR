@@ -1,14 +1,24 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:front/result_view.dart';
 import 'package:front/widget/input_field.dart';
 import 'gamecommunication.dart';
 
 class BoardView extends StatefulWidget {
-  const BoardView({Key? key}) : super(key: key);
+  final int myId;
+  final String myName;
+  final dynamic players;
+  const BoardView({
+    Key? key,
+    required this.myId,
+    required this.myName,
+    required this.players,
+  }) : super(key: key);
 
   @override
   _BoardViewState createState() => _BoardViewState();
@@ -26,7 +36,8 @@ class _BoardViewState extends State<BoardView> {
   @override
   void initState() {
     super.initState();
-
+    myId = widget.myId;
+    players = widget.players; //dans l'init state !
     game.addListener(_onAction);
   }
 
@@ -48,26 +59,14 @@ class _BoardViewState extends State<BoardView> {
           Column(
             children: [
               SizedBox(
-                width: 300,
-                child: CustumTextInput(
-                  controller: _pseudoController,
-                  label: "Nom du joueur",
-                ),
-              ),
+                  width: 800,
+                  child: Text(
+                    widget.myName,
+                    style: const TextStyle(
+                        fontWeight: FontWeight.w900, fontSize: 60),
+                  )),
               const SizedBox(
                 height: 30,
-              ),
-              ElevatedButton(
-                onPressed: _onConnect,
-                child: const SizedBox(
-                  height: 30,
-                  width: 180,
-                  child: Center(
-                    child: Text(
-                      "Se connecter",
-                    ),
-                  ),
-                ),
               ),
             ],
           ),
@@ -120,34 +119,36 @@ class _BoardViewState extends State<BoardView> {
               Flexible(
                 child: Container(
                   height: 500,
-                  width: 100,
-                  child: ListView.separated(
-                      itemBuilder: (BuildContext context, int index) {
-                        var player = players[index];
-                        return Row(
-                          mainAxisSize: MainAxisSize.min,
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              player['pseudo'],
-                              style: const TextStyle(
-                                  fontSize: 17, fontWeight: FontWeight.w600),
-                            ),
-                            const SizedBox(
-                              width: 20,
-                            ),
-                            Text(
-                              player['score'].toString(),
-                              style: const TextStyle(
-                                  fontSize: 17, fontWeight: FontWeight.w600),
-                            )
-                          ],
-                        );
-                      },
-                      separatorBuilder: (BuildContext context, int index) {
-                        return const Divider();
-                      },
-                      itemCount: players.length),
+                  child: Padding(
+                    padding: const EdgeInsets.all(15.0),
+                    child: ListView.separated(
+                        itemBuilder: (BuildContext context, int index) {
+                          var player = players[index];
+                          return Row(
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                player['pseudo'],
+                                style: const TextStyle(
+                                    fontSize: 17, fontWeight: FontWeight.w600),
+                              ),
+                              const SizedBox(
+                                width: 20,
+                              ),
+                              Text(
+                                player['score'].toString(),
+                                style: const TextStyle(
+                                    fontSize: 17, fontWeight: FontWeight.w600),
+                              )
+                            ],
+                          );
+                        },
+                        separatorBuilder: (BuildContext context, int index) {
+                          return const Divider();
+                        },
+                        itemCount: players.length),
+                  ),
                 ),
               ),
             ],
@@ -232,6 +233,12 @@ class _BoardViewState extends State<BoardView> {
         players = message['players'];
         getAllIndex();
         break;
+      case 'finished':
+        Navigator.push(context,
+            MaterialPageRoute(builder: (BuildContext context) {
+          return ResultView(players: message["players"]);
+        }));
+        break;
     }
   }
 
@@ -244,7 +251,7 @@ class _BoardViewState extends State<BoardView> {
 
   _onConnect() {
     myId = DateTime.now().microsecondsSinceEpoch;
-    game.send('connect', size, 10, myId, _pseudoController.text, "");
+    game.send('connect', size, 3, myId, _pseudoController.text, "");
   }
 
   _onLeftMove() {

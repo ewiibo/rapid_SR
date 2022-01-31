@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class ResultView extends StatelessWidget {
-  List<Map<String, dynamic>> players;
+  List<dynamic> players;
   ResultView({required this.players, Key? key}) : super(key: key);
 
   @override
